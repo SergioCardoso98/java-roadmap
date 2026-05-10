@@ -1,22 +1,22 @@
-import basics.*;//imports from package basics that has the various classes
+import basics.*;
 import moreoop.*;
 public class Main {
     public static void main(String[] args) {
         //runBasics();
-        runMoreoop(3);
+        runMoreoop(5);
     }
     public static void runBasics(){
-        BasicSyntax bs = new BasicSyntax();
-        TypeCasting tc = new TypeCasting();
-        MathOperations mo = new MathOperations();
-        Arrays arr = new Arrays();
-        ConditionalAndLoops cal = new ConditionalAndLoops();
+        BasicSyntax bs = new BasicSyntax(); //Creates an instance of BasicSyntax class
+        TypeCasting tc = new TypeCasting(); //Creates an instance of TypeCasting class
+        MathOperations mo = new MathOperations(); //Creates an instance of MathOperations class
+        Arrays arr = new Arrays(); //Creates an instance of Arrays class
+        ConditionalAndLoops cal = new ConditionalAndLoops(); //Creates an instance of ConditionalAndLoops class
 
-        OopBasics oopb = new OopBasics();
-        OopBasics oopb2 = new OopBasics(1, "custom string", 1.00F);
-        oopb.print_object();
-        oopb2.print_object();
-        OopBasics.static_method();
+        OopBasics oopb = new OopBasics(); //Creates an OopBasics object using default constructor
+        OopBasics oopb2 = new OopBasics(1, "custom string", 1.00F); //Creates an OopBasics object using parameterized constructor
+        oopb.print_object(); //Calls print_object method on first object
+        oopb2.print_object(); //Calls print_object method on second object
+        OopBasics.static_method(); //Calls static method directly from the class (no object needed)
     }
     public static void runMoreoop(int module){
         //ObjectLifeCycle
@@ -35,14 +35,35 @@ public class Main {
         }
         //MethodChaining
         if(module == 2){
-            MethodChaining mco = new MethodChaining("I have a", "surprise for you, here: ");
-            System.out.println("Method chaining is when a method returns the same object (this), so you can call another method immediately on it.");
-            System.out.println("System.out.println(mco.printBothAttr().addSmile()) = ");
-            System.out.println(mco.printBothAttr().addSmile());
-            System.out.println("Without method chaining would be");
-            System.out.println("System.out.println(mco.printBothAttr() + mco.addSmile())");
-            System.out.println(mco.printBothAttr() + mco.addSmile());
+            MethodChaining mco = new MethodChaining("I have a", "surprise for you, here: "); //Creates a MethodChaining object with two attributes
+            System.out.println("Method chaining is when a method returns the same object (this), so you can call another method immediately on it."); //Explains method chaining concept
+            System.out.println("System.out.println(mco.printBothAttr().addSmile()) = "); //Shows example of method chaining syntax
+            System.out.println(mco.printBothAttr().addSmile()); //Calls printBothAttr then immediately calls addSmile using method chaining
+            System.out.println("Without method chaining would be"); //Introduces non-chaining version
+            System.out.println("System.out.println(mco.printBothAttr() + mco.addSmile())"); //Shows alternative-style example
+            System.out.println(mco.printBothAttr() + mco.addSmile()); //Calls methods separately and concatenates results
         }
-        if (module == 3){}
+        //Enums
+        if (module == 3){
+            Enums enumObject = new Enums("This is my 1st enum object", Enums.EnumsType.ENUM1);// Creates a new Enums object with a name and enum type
+            System.out.println(enumObject.enumObjectName);//Prints the name of the enum object
+            System.out.println(enumObject.enumType);// Prints the enum constant (ENUM1 in this case)
+        }
+        //Records
+        if (module == 4){
+            Records rec = new Records("record1"); //Creates a Records object using custom constructor with only 1 parameter
+            Records rec2 = new Records("record2", 100, 100.00F); //Creates a Records object using full constructor with all fields
+            System.out.println("record1 embedded Method toString() -> " + rec.toString()); //Calls automatically generated toString() method from record
+            System.out.println("record2 embedded Method toString() -> " + rec2.toString()); //Calls automatically generated toString() method from record
+            System.out.println("record2 custom Method customMethod() -> " + rec2.customMethod()); //Calls user-defined method inside record
+            System.out.println("record2 embedded Method equals() -> " + rec2.equals(rec)); //Calls automatically generated equals() method to compare two record objects
+        }
+        //initializer block
+        if (module == 5){
+            InitializerBlock ib1 = new InitializerBlock(); //Creates first object, initializer block runs automatically before constructor
+            InitializerBlock ib2 = new InitializerBlock(); //Creates second object, initializer block runs again for this new instance
+            InitializerBlock ib3 = new InitializerBlock(); //Creates third object, initializer block runs again for this new instance
+        }
+
     }
 }
