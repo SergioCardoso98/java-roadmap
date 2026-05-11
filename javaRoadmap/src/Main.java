@@ -3,7 +3,7 @@ import moreoop.*;
 public class Main {
     public static void main(String[] args) {
         //runBasics();
-        runMoreoop(5);
+        //runMoreoop(6);
     }
     public static void runBasics(){
         BasicSyntax bs = new BasicSyntax(); //Creates an instance of BasicSyntax class
@@ -64,6 +64,22 @@ public class Main {
             InitializerBlock ib2 = new InitializerBlock(); //Creates second object, initializer block runs again for this new instance
             InitializerBlock ib3 = new InitializerBlock(); //Creates third object, initializer block runs again for this new instance
         }
-
+        //Inheritance + Abstraction + Encapsulation + Interfaces + Method Overloading/Overriding + Static/Dynamic Binding + Pass-by-value
+        if (module == 6){
+            // JAVA PARAMETER PASSING RULE:
+            // Java is ALWAYS pass-by-value.
+            // For primitives (int, boolean, etc.): the actual value is copied, so changes inside methods do NOT affect the original variable.
+            // For objects: the VALUE of the reference (memory address) is copied, NOT the object itself.
+                // This means both variables point to the same object, so modifying object fields inside a method WILL affect the original object.
+                // HOWEVER, reassigning the reference inside the method (e.g. c = new Object()) does NOT affect the original reference outside.
+            // Key idea: Java never passes the original variable itself, only a copy of its value (even when that value is a reference).
+            OOPConcepts_SubClass_Cat cat = new OOPConcepts_SubClass_Cat("Gato", 1, true); // create Cat object (name, age, alive state)
+            System.out.println(cat.getName() + " with " + cat.getAge() + " years says: " + cat.talk()); // print initial state (name, age, behavior)
+            cat.setAge(70); // update age (will be capped by MAX_AGE logic in setter)
+            System.out.println(cat.getName() + " with " + cat.getAge() + " years says: " + cat.talk()); // print updated state after validation
+            cat.setName("seven"); // calling overloaded method
+            System.out.println(cat.getName() + " with " + cat.getAge() + " years says: " + cat.talk()); // print updated state after validation
+            System.out.println("Is cat alive? " + cat.alive()); // call interface method to check if animal is alive
+        }
     }
 }
