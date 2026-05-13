@@ -1,9 +1,17 @@
+import java.util.Scanner;
 import basics.*;
 import moreoop.*;
+import intermediate.*;
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, ExceptionHandling_Checked_NumberValidator {
         //runBasics();
         //runMoreoop(6);
+        try{
+            runIntermediate(1);
+        }catch (ExceptionHandling_Checked_NumberValidator | ExceptionHandling_Unchecked_NumberValidator e){
+            e.printStackTrace();
+        }
+
     }
     public static void runBasics(){
         BasicSyntax bs = new BasicSyntax(); //Creates an instance of BasicSyntax class
@@ -80,6 +88,21 @@ public class Main {
             cat.setName("seven"); // calling overloaded method
             System.out.println(cat.getName() + " with " + cat.getAge() + " years says: " + cat.talk()); // print updated state after validation
             System.out.println("Is cat alive? " + cat.alive()); // call interface method to check if animal is alive
+        }
+    }
+    public static void runIntermediate(int module) throws InterruptedException, ExceptionHandling_Checked_NumberValidator {
+        Scanner sc = new Scanner(System.in);
+        while (true){
+            if (module == 1){
+                System.out.print("Enter a number from 1 - 10: ");
+                int number = sc.nextInt();
+                if (number == 30){
+                    throw new ExceptionHandling_Unchecked_NumberValidator("Special exception for number 30");
+                }
+                if (number < 1 || number > 10){
+                    throw new ExceptionHandling_Checked_NumberValidator("Number not between 1 - 10");
+                }
+            }
         }
     }
 }
