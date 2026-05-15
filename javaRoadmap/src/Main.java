@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import basics.*;
 import moreoop.*;
@@ -133,13 +134,20 @@ public class Main {
             //https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html
         }
         if (module == 3){
-            Annotations objectWithNull = new Annotations(null);
-            Annotations objectWithoutNull = new Annotations("Hello World");
-
-            objectWithoutNull.deprecatedSayHelloMethod();
-            objectWithoutNull.suppressedDeprecatedSayHelloMethod();
-            objectWithoutNull.sayHelloMethod();
-            objectWithNull.sayHelloMethod();
+            try {
+                // creates object → validation runs → should PASS (only stringAttr is null but NOT annotated)
+                Annotations objectWithValidNull = new Annotations(null, "attr2", "attr3");
+                // method calls after successful creation
+                objectWithValidNull.deprecatedSayHelloMethod();
+                objectWithValidNull.suppressedDeprecatedSayHelloMethod();
+                objectWithValidNull.sayHelloMethod();
+                // creates object → validation runs → FAILS because annotated fields are null
+                Annotations objectWithInvalidNull = new Annotations(null, null, null);
+            } catch (InputMismatchException | IllegalAccessException e) {
+                // catches validation failure or reflection error
+                System.out.println("Object not created because nulls detected in @CustomAnnotationNotnull fields");
+            }
         }
+        
     }
 }
