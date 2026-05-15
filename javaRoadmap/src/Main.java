@@ -3,12 +3,13 @@ import basics.*;
 import moreoop.*;
 import intermediate.*;
 public class Main {
-    public static void main(String[] args) throws InterruptedException, ExceptionHandling_Checked_NumberValidator {
+    public static void main(String[] args){
         //runBasics();
         //runMoreoop(6);
-        try{
-            runIntermediate(1);
-        }catch (ExceptionHandling_Checked_NumberValidator | ExceptionHandling_Unchecked_NumberValidator e){
+        try{//For the module = 1; the method can throw checked and unchecked exceptions
+            runIntermediate(3);
+        }catch (ExceptionHandling_Checked_NumberValidator | ExceptionHandling_Unchecked_NumberValidator e){// Catches both checked (compile-time enforced) and unchecked (runtime) exceptions using multi-catch
+            //And since I'm catching the checked exception here in main, I don't need the "throws ExceptionHandling_Checked_NumberValidator" in the method "public static void main(String[] args)"
             e.printStackTrace();
         }
 
@@ -90,19 +91,55 @@ public class Main {
             System.out.println("Is cat alive? " + cat.alive()); // call interface method to check if animal is alive
         }
     }
-    public static void runIntermediate(int module) throws InterruptedException, ExceptionHandling_Checked_NumberValidator {
-        Scanner sc = new Scanner(System.in);
-        while (true){
-            if (module == 1){
+    public static void runIntermediate(int module) throws ExceptionHandling_Checked_NumberValidator {// Method declaration; 'throws' is required for checked exceptions because compiler enforces handling
+        if (module == 1){
+            Scanner sc = new Scanner(System.in);
+            while (true){
+
                 System.out.print("Enter a number from 1 - 10: ");
                 int number = sc.nextInt();
-                if (number == 30){
-                    throw new ExceptionHandling_Unchecked_NumberValidator("Special exception for number 30");
+                if (number == 30){// Checks for a special invalid case
+                    //Despite not catching the exception, I don't need the "throws ExceptionHandling_Unchecked_NumberValidator" because is unchecked Exception
+                    throw new ExceptionHandling_Unchecked_NumberValidator("Special exception for number 30"); // Throws an unchecked exception (RuntimeException); compiler does not force handling
                 }
                 if (number < 1 || number > 10){
-                    throw new ExceptionHandling_Checked_NumberValidator("Number not between 1 - 10");
+                    //Need the "throws ExceptionHandling_Checked_NumberValidator" in the method because I'm not catching the exception ExceptionHandling_Checked_NumberValidator
+                    throw new ExceptionHandling_Checked_NumberValidator("Number not between 1 - 10");// Throws a checked exception; compiler requires try-catch or throws declaration
                 }
             }
+        }
+        if (module == 2){
+            // Traditional anonymous class. Here we manually create an implementation of the Runnable interface
+            // We must explicitly write: new Runnable() -> override the run() method -> provide full method structure (boilerplate code)
+            Runnable leTraditional = new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Hello");// This is the actual code that runs when run() is called
+                }
+            };
+            // Lambda expression version. This is a shorter way to implement the same Runnable interface
+            // Java automatically knows we are implementing run() because Runnable has only ONE abstract method (functional interface rule)
+            // The lambda here means: "When run() is called, execute System.out.println("Hello")"
+            Runnable leLambda = () -> System.out.println("Hello");
+
+            //My custom interface to use a lambda expression on, is the same as above but I implemented it
+            LambdaExpressions leCustom = () -> System.out.println("Hello");
+
+            // All do the same thing — just different syntax styles
+            leTraditional.run(); // executes anonymous class implementation
+            leLambda.run();// executes anonymous class implementation
+            leCustom.run();//executes anonymous class implementation
+
+            //https://docs.oracle.com/javase/8/docs/api/java/util/function/package-summary.html
+        }
+        if (module == 3){
+            Annotations objectWithNull = new Annotations(null);
+            Annotations objectWithoutNull = new Annotations("Hello World");
+
+            objectWithoutNull.deprecatedSayHelloMethod();
+            objectWithoutNull.suppressedDeprecatedSayHelloMethod();
+            objectWithoutNull.sayHelloMethod();
+            objectWithNull.sayHelloMethod();
         }
     }
 }
