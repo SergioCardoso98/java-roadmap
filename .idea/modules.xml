@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/javaRoadmap/intermediate.modules/intermediate.modules.iml" filepath="$PROJECT_DIR$/javaRoadmap/intermediate.modules/intermediate.modules.iml" />
       <module fileurl="file://$PROJECT_DIR$/java-roadmap.iml" filepath="$PROJECT_DIR$/java-roadmap.iml" />
       <module fileurl="file://$PROJECT_DIR$/javaRoadmap/javaRoadmap.iml" filepath="$PROJECT_DIR$/javaRoadmap/javaRoadmap.iml" />
     </modules>

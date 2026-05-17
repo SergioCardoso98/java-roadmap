@@ -1,14 +1,18 @@
 import java.util.InputMismatchException;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.Stack;
+
 import basics.*;
 import moreoop.*;
 import intermediate.*;
+
 public class Main {
     public static void main(String[] args){
         //runBasics();
         //runMoreoop(6);
         try{//For the module = 1; the method can throw checked and unchecked exceptions
-            runIntermediate(3);
+            runIntermediate(7);
         }catch (ExceptionHandling_Checked_NumberValidator | ExceptionHandling_Unchecked_NumberValidator e){// Catches both checked (compile-time enforced) and unchecked (runtime) exceptions using multi-catch
             //And since I'm catching the checked exception here in main, I don't need the "throws ExceptionHandling_Checked_NumberValidator" in the method "public static void main(String[] args)"
             e.printStackTrace();
@@ -148,6 +152,42 @@ public class Main {
                 System.out.println("Object not created because nulls detected in @CustomAnnotationNotnull fields");
             }
         }
-        
+        if (module == 4){
+            intermediatemodules.module.main(); //comments explaining this is on the Module itself, this just runs it
+        }
+        if (module == 5){
+            Optional<OptionalDisplayObject> do1 = Optional.of(new OptionalDisplayObject("object1", 10)); // create Optional containing a value (never null here)
+            Optional<OptionalDisplayObject> do2 = Optional.ofNullable(null); // create empty Optional (value is null so becomes Optional.empty)
+
+            System.out.println("do1.isPresent(): "+ do1.isPresent()); // true because do1 contains a value
+            System.out.println("do2.isPresent(): "+ do2.isPresent()); // false because do2 is empty
+            System.out.println("do1.get().attrString + do1.get().attrInt: "+do1.get().attrString + "/" + do1.get().attrInt); // safely using get() because value exists
+            try{do2.orElseThrow();}catch(Exception e){System.out.println("do2.orElseThrow(): exception thrown because do2 is empty (no value present)");} // throws NoSuchElementException since Optional is empty
+            System.out.println("do1.orElse(new OptionalDisplayObject(\"UNKNOWN\", 0)): "); // orElse is called but result is ignored (does NOT modify do1)
+            do1.orElse(new OptionalDisplayObject("UNKNOWN", 0)); // fallback is evaluated but discarded since do1 already has value
+            System.out.println("    - do1.get().attrString + do1.get().attrInt: "+do1.get().attrString + "/" + do1.get().attrInt); // still original value because do1 was never changed
+            System.out.println("do2 = Optional.of(do2.orElse(new OptionalDisplayObject(\"UNKNOWN\", 0)))"); // attempt to replace empty Optional with fallback wrapped in Optional
+            do2 = Optional.of(do2.orElse(new OptionalDisplayObject("UNKNOWN", 0))); // do2 becomes non-empty Optional containing fallback value
+            System.out.println("    - do2.get().attrString + do2.get().attrInt: "+do2.get().attrString + "/" + do2.get().attrInt); // now safe: prints fallback values
+        }
+        if (module == 6){
+            // Create the dependency object (this is the "service" that will be injected)
+            DependencyInjection_Injection injection =
+                    new DependencyInjection_Injection("a", "b", "c");
+            // Create the dependant object and INJECT the dependency via constructor
+            DependencyInjection_Dependant dependant =
+                    new DependencyInjection_Dependant(injection);
+            // Print the original dependency object directly
+            System.out.println("[Directly printing Injection object]");
+            injection.printInjection();
+            // Print the dependant, which uses the injected object internally
+            System.out.println("\n[Printing from Dependant (using injected object)]");
+            dependant.printDependant();
+        }
+        if (module == 7){
+            Stack<String> stackCollection = new Stack<String>();
+            CollectionsWrapper<Stack> stackCollectionsWrapper = new CollectionsWrapper<>(stackCollection);
+            stackCollectionsWrapper.displayCollection();
+        }
     }
 }
