@@ -222,38 +222,178 @@ public class Main {
         }
 
     }
-    public static void runConcurrency(){
+    public static void runConcurrency() {
+        /**
+         * Demonstrates several ways to create and manage threads in Java:
+         *
+         * 1. Extending Thread
+         * 2. Implementing Runnable
+         * 3. Anonymous Runnable class
+         * 4. Lambda Runnable
+         * 5. Gracefully stopping a thread
+         * 6. Daemon threads
+         */
+        // ==========================================================
+        // 1. CREATE THREAD BY EXTENDING THREAD CLASS
+        // ==========================================================
         MyThreadClass classThread = new MyThreadClass("classThread");
-        classThread.start();
+        classThread.start(); // Creates a new thread and executes run()
 
-        Thread interfaceThread = new Thread( new MyThreadInterface(){}, "interfaceThread" );
+        // ==========================================================
+        // 2. CREATE THREAD USING A CLASS IMPLEMENTING RUNNABLE
+        // ==========================================================
+        Thread interfaceThread =
+                new Thread(new MyRunnableInterface() {}, "interfaceThread");
         interfaceThread.start();
 
+        // ==========================================================
+        // 3. CREATE THREAD USING AN ANONYMOUS RUNNABLE CLASS
+        // ==========================================================
         Runnable runnableFunc = new Runnable() {
             @Override
             public void run() {
                 try {
-                    System.out.println(Thread.currentThread().getName() + " - Thread Start");
+                    System.out.println(
+                            "[Anonymous Runnable] " +
+                                    Thread.currentThread().getName() +
+                                    " -> START");
+
                     Thread.sleep(1000);
-                    System.out.println(Thread.currentThread().getName() + " - Thread End");
+
+                    System.out.println(
+                            "[Anonymous Runnable] " +
+                                    Thread.currentThread().getName() +
+                                    " -> END");
+
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
         };
-        Thread runnableThread = new Thread(runnableFunc, "runnableThread");
+
+        Thread runnableThread =
+                new Thread(runnableFunc, "runnableThread");
         runnableThread.start();
 
+        // ==========================================================
+        // 4. CREATE THREAD USING A LAMBDA EXPRESSION
+        // ==========================================================
         Runnable runnableLambdaFunc = () -> {
             try {
-                System.out.println(Thread.currentThread().getName() + " - Thread Start");
+                System.out.println(
+                        "[Lambda Runnable] " +
+                                Thread.currentThread().getName() +
+                                " -> START");
+
                 Thread.sleep(1000);
-                System.out.println(Thread.currentThread().getName() + " - Thread End");
+
+                System.out.println(
+                        "[Lambda Runnable] " +
+                                Thread.currentThread().getName() +
+                                " -> END");
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         };
-        Thread runnableLambdaThread = new Thread(runnableLambdaFunc, "runnableLambdaThread");
+
+        Thread runnableLambdaThread =
+                new Thread(runnableLambdaFunc, "runnableLambdaThread");
         runnableLambdaThread.start();
+
+        // ==========================================================
+        // WAIT FOR ALL THREADS TO FINISH
+        //
+        // join() blocks the current thread (main thread here)
+        // until the target thread has completed execution.
+        // ==========================================================
+        try {
+            classThread.join();
+            interfaceThread.join();
+            runnableThread.join();
+            runnableLambdaThread.join();
+
+            System.out.println(
+                    "[MAIN] All worker threads have completed.");
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        // ==========================================================
+        // 5. GRACEFULLY STOPPING A THREAD
+        //
+        // Never use Thread.stop() (deprecated and unsafe).
+        // Instead use a shared flag that the thread checks.
+        // ==========================================================
+        try {
+            MyStoppableRunnable stoppableRunnable =
+                    new MyStoppableRunnable();
+
+            Thread stoppableThread =
+                    new Thread(stoppableRunnable, "stoppableThread");
+
+            stoppableThread.start();
+
+            // Allow the thread to run for 3 seconds
+            Thread.sleep(3000);
+
+            // Ask the thread to stop
+            stoppableRunnable.requestStop();
+
+            // Wait for it to finish
+            stoppableThread.join();
+
+            System.out.println(
+                    "[MAIN] Stoppable thread terminated.");
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        // ==========================================================
+        // 6. DAEMON THREAD
+        //
+        // Daemon threads run in the background.
+        // JVM exits automatically when only daemon threads remain.
+        // ==========================================================
+        Runnable daemonRunnable = () -> {
+            try {
+                System.out.println(
+                        "[Daemon] " +
+                                Thread.currentThread().getName() +
+                                " -> START");
+
+                while (true) {
+                    Thread.sleep(500);
+
+                    System.out.println(
+                            "[Daemon] " +
+                                    Thread.currentThread().getName() +
+                                    " -> RUNNING");
+                }
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
+
+        Thread daemonThread =
+                new Thread(daemonRunnable, "daemonThread");
+
+        try {
+            daemonThread.setDaemon(true); // Must be called before start()
+            daemonThread.start();
+
+            // Main thread stays alive for 5 seconds
+            Thread.sleep(5000);
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println(
+                "[MAIN] Main thread finished. JVM will now terminate, " +
+                        "stopping the daemon thread automatically.");
     }
 }
