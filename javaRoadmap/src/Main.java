@@ -1,23 +1,23 @@
-import java.util.InputMismatchException;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 
+import intermediatemodules.module;
 import basics.*;
+import basics.Arrays;
 import moreoop.*;
 import intermediate.*;
+import concurrency.*;
 
 public class Main {
     public static void main(String[] args){
         //runBasics();
         //runMoreoop(6);
-        try{//For the module = 1; the method can throw checked and unchecked exceptions
+        /*try{//For the module = 1; the method can throw checked and unchecked exceptions
             runIntermediate(7);
         }catch (ExceptionHandling_Checked_NumberValidator | ExceptionHandling_Unchecked_NumberValidator e){// Catches both checked (compile-time enforced) and unchecked (runtime) exceptions using multi-catch
             //And since I'm catching the checked exception here in main, I don't need the "throws ExceptionHandling_Checked_NumberValidator" in the method "public static void main(String[] args)"
             e.printStackTrace();
-        }
-
+        }*/
+        runConcurrency();
     }
     public static void runBasics(){
         BasicSyntax bs = new BasicSyntax(); //Creates an instance of BasicSyntax class
@@ -185,9 +185,75 @@ public class Main {
             dependant.printDependant();
         }
         if (module == 7){
+            //These objects are just used so that in the class it falls under the correct if
+            //The class creates its own object to demonstrate
             Stack<String> stackCollection = new Stack<String>();
+            ArrayList<String> arrayListCollection = new ArrayList<>();
+            Iterator<String> iteratorCollection = arrayListCollection.iterator();
+            Queue<Integer> queueCollection = new ArrayDeque<>();
+            Deque<Integer> dequeCollection = new ArrayDeque<>();
+            Set<Integer> setCollection = new HashSet<>();
+            Map<String, Integer> mapCollection = new HashMap<>();
+            int[] arrayCollection = {1, 2, 3};
+
             CollectionsWrapper<Stack> stackCollectionsWrapper = new CollectionsWrapper<>(stackCollection);
             stackCollectionsWrapper.displayCollection();
+
+            CollectionsWrapper<Iterator> iteratorCollectionsWrapper = new CollectionsWrapper<>(iteratorCollection);
+            iteratorCollectionsWrapper.displayCollection();
+
+            CollectionsWrapper<Queue> queueCollectionsWrapper = new CollectionsWrapper<>(queueCollection);
+            queueCollectionsWrapper.displayCollection();
+
+            CollectionsWrapper<Deque> dequeCollectionsWrapper = new CollectionsWrapper<>(dequeCollection);
+            dequeCollectionsWrapper.displayCollection();
+
+            CollectionsWrapper<Set> setCollectionsWrapper = new CollectionsWrapper<>(setCollection);
+            setCollectionsWrapper.displayCollection();
+
+            CollectionsWrapper<Map> mapCollectionsWrapper = new CollectionsWrapper<>(mapCollection);
+            mapCollectionsWrapper.displayCollection();
+
+            CollectionsWrapper<ArrayList> arrayListCollectionWrapper = new CollectionsWrapper<>(arrayListCollection);
+            arrayListCollectionWrapper.displayCollection();
+
+            CollectionsWrapper<int[]> arrayCollectionsWrapper = new CollectionsWrapper<>(arrayCollection);
+            arrayCollectionsWrapper.displayCollection();
         }
+
+    }
+    public static void runConcurrency(){
+        MyThreadClass classThread = new MyThreadClass("classThread");
+        classThread.start();
+
+        Thread interfaceThread = new Thread( new MyThreadInterface(){}, "interfaceThread" );
+        interfaceThread.start();
+
+        Runnable runnableFunc = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println(Thread.currentThread().getName() + " - Thread Start");
+                    Thread.sleep(1000);
+                    System.out.println(Thread.currentThread().getName() + " - Thread End");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        Thread runnableThread = new Thread(runnableFunc, "runnableThread");
+        runnableThread.start();
+
+        Runnable runnableLambdaFunc = () -> {
+            try {
+                System.out.println(Thread.currentThread().getName() + " - Thread Start");
+                Thread.sleep(1000);
+                System.out.println(Thread.currentThread().getName() + " - Thread End");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        Thread runnableLambdaThread = new Thread(runnableLambdaFunc, "runnableLambdaThread");
+        runnableLambdaThread.start();
     }
 }
