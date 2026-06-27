@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import intermediatemodules.module;
 import basics.*;
@@ -9,15 +10,18 @@ import concurrency.*;
 
 public class Main {
     public static void main(String[] args){
-        //runBasics();
-        //runMoreoop(6);
+        //runBasics(1);
+        //runMoreoop(1);
         /*try{//For the module = 1; the method can throw checked and unchecked exceptions
             runIntermediate(7);
         }catch (ExceptionHandling_Checked_NumberValidator | ExceptionHandling_Unchecked_NumberValidator e){// Catches both checked (compile-time enforced) and unchecked (runtime) exceptions using multi-catch
             //And since I'm catching the checked exception here in main, I don't need the "throws ExceptionHandling_Checked_NumberValidator" in the method "public static void main(String[] args)"
             e.printStackTrace();
         }*/
-        runConcurrency();
+        //runConcurrency();
+        //runVirtualThreads();
+        //runJavaMemoryModel();
+        runVolatileAndSynchronized();
     }
     public static void runBasics(){
         BasicSyntax bs = new BasicSyntax(); //Creates an instance of BasicSyntax class
@@ -395,5 +399,118 @@ public class Main {
         System.out.println(
                 "[MAIN] Main thread finished. JVM will now terminate, " +
                         "stopping the daemon thread automatically.");
+    }
+    public static void runVirtualThreads() {
+        // ==========================================================
+        // VIRTUAL THREADS (Project Loom)
+        //
+        // Virtual threads are lightweight threads managed by the JVM.
+        // Unlike platform threads, you can create thousands or even
+        // millions of them with very little overhead.
+        //
+        // This example:
+        //
+        // 1. Creates multiple virtual threads
+        // 2. Assigns each thread a name
+        // 3. Starts all threads
+        // 4. Waits for all threads to finish using join()
+        // ==========================================================
+
+        List<Thread> virtualThreads = new ArrayList<>();
+
+        int numberOfVirtualThreads = 20;
+
+        // ==========================================================
+        // TASK EXECUTED BY EACH VIRTUAL THREAD
+        // ==========================================================
+        Runnable virtualThreadTask = () -> {
+
+            System.out.println(
+                    "[Virtual Thread] " +
+                            Thread.currentThread().getName() +
+                            " -> START");
+
+            try {
+                // Simulate some work
+                Thread.sleep(2000);
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            System.out.println(
+                    "[Virtual Thread] " +
+                            Thread.currentThread().getName() +
+                            " -> END");
+        };
+        // ==========================================================
+        // CREATE ALL VIRTUAL THREADS
+        //
+        // Threads are created in an unstarted state and stored
+        // in a collection for later execution.
+        // ==========================================================
+        for (int i = 0; i <= numberOfVirtualThreads; i++) {
+
+            Thread virtualThread =
+                    Thread.ofVirtual()
+                            .name("virtualThread-" + i)
+                            .unstarted(virtualThreadTask);
+
+            virtualThreads.add(virtualThread);
+        }
+
+        // ==========================================================
+        // START ALL VIRTUAL THREADS
+        // ==========================================================
+        for (Thread virtualThread : virtualThreads) {
+            virtualThread.start();
+        }
+
+        // ==========================================================
+        // WAIT FOR ALL VIRTUAL THREADS TO COMPLETE
+        //
+        // join() blocks the current thread until the target
+        // virtual thread has finished execution.
+        // ==========================================================
+        for (Thread virtualThread : virtualThreads) {
+            try {
+                virtualThread.join();
+            }
+            catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        System.out.println(
+                "[MAIN] All virtual threads have completed.");
+    }
+    public static void runJavaMemoryModel(){
+        //See images in file concurrency for more context
+
+        // Shared mutable object (NOT thread-safe)
+        ArrayList<Integer> sharedList = new ArrayList<>();
+
+        // Primitive value passed into threads (copied, not shared)
+        int initialCounterValue = 0;
+
+        // Thread-safe shared counter
+        AtomicInteger sharedAtomicCounter = new AtomicInteger(0);
+
+        Runnable task1 = new MyJavaMemoryModelClass(sharedList, initialCounterValue, sharedAtomicCounter);
+        Runnable task2 = new MyJavaMemoryModelClass(sharedList, initialCounterValue, sharedAtomicCounter);
+
+        Thread thread1 = new Thread(task1, "Thread-1");
+        Thread thread2 = new Thread(task2, "Thread-2");
+
+        thread1.start();
+        thread2.start();
+        }
+    public static void runVolatileAndSynchronized() {
+        System.out.println("#### Volatile Key Word demonstration ###");
+        MyVolatileClass volatileObject = new MyVolatileClass(); // shared object used by both threads
+        Thread threadSetter = new Thread(new MyVolatileSetterRunnableClass(volatileObject), "ThreadSetter"); // writer thread modifies shared state
+        Thread threadGetter = new Thread(new MyVolatileGetterRunnableClass(volatileObject), "ThreadGetter"); // reader thread observes shared state
+        threadGetter.start(); // start reader first to increase chance of partial reads
+        threadSetter.start(); // start writer second
     }
 }

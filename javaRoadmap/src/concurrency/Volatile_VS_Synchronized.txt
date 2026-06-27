@@ -1,0 +1,33 @@
+Volatile vs Synchronized (Java Notes)
+
+MyVolatileClass demonstrates shared memory access between threads.
+
+Key idea:
+- volatile ensures visibility of a single variable (varB)
+- synchronized ensures mutual exclusion + full memory visibility for all variables
+
+In this example:
+- varA is a normal int (no guarantees)
+- varB is volatile (visibility + ordering guarantees)
+- varC is a normal int (no guarantees)
+
+Important Java Memory Model rule:
+A write to a volatile variable (varB) creates a happens-before relationship.
+
+This means:
+- All writes BEFORE varB are guaranteed visible to other threads that read varB
+- Writes AFTER varB are NOT guaranteed to be visible
+
+That is why varC can appear stale in some outputs.
+
+Thread interaction:
+- ThreadSetter continuously updates varA, varB, varC
+- ThreadGetter reads values concurrently without locking
+
+This creates a data race for varA and varC
+but not for varB (due to volatile)
+
+Replacing volatile with synchronized would:
+- force exclusive access to the method
+- make all writes visible consistently
+- eliminate stale reads completely
